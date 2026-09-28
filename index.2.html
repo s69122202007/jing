@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bus Connect - รถเมล์โดยสาร</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,"Noto Sans Thai",sans-serif;background:#f4f8fb;color:#17324d;line-height:1.6}
+header{background:linear-gradient(135deg,#0b5cab,#19a7ce);color:white;padding:22px 7%;position:sticky;top:0;z-index:10}
+nav{display:flex;justify-content:space-between;align-items:center;gap:20px}
+.logo{font-size:25px;font-weight:bold}
+nav a{color:white;text-decoration:none;margin-left:18px;font-weight:bold}
+nav a:hover{opacity:.8}
+.hero{padding:70px 7%;background:linear-gradient(135deg,#e6f6ff,#fff);display:grid;grid-template-columns:1.1fr .9fr;gap:35px;align-items:center}
+.hero h1{font-size:46px;color:#0759a5;margin-bottom:12px}
+.hero p{font-size:19px;margin-bottom:24px}
+.btn{display:inline-block;background:#ff9f1c;color:#fff;padding:12px 22px;border-radius:10px;text-decoration:none;font-weight:bold}
+.bus-art{background:white;border-radius:25px;padding:35px;box-shadow:0 10px 30px #0001;text-align:center}
+.bus{font-size:120px}
+section{padding:55px 7%}
+.title{text-align:center;font-size:31px;color:#0759a5;margin-bottom:30px}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.card{background:white;padding:25px;border-radius:18px;box-shadow:0 5px 20px #00000012}
+.card h3{color:#0759a5;margin-bottom:8px}
+.route{font-size:22px;font-weight:bold;color:#0b7a4b}
+.search{background:#0759a5;color:white;border-radius:20px;padding:30px;margin-top:20px}
+.search input{padding:13px;border:0;border-radius:8px;width:70%;font-size:16px}
+.search button{padding:13px 18px;border:0;border-radius:8px;background:#ff9f1c;color:white;font-weight:bold;cursor:pointer}
+#result{margin-top:18px;background:white;color:#17324d;padding:15px;border-radius:10px;display:none}
+.graph{background:#fff;padding:25px;border-radius:18px;box-shadow:0 5px 20px #0001}
+.graphbox{display:flex;justify-content:center;align-items:center;gap:35px;flex-wrap:wrap;margin:25px 0}
+.node{background:#e8f5ff;border:3px solid #0b7dcc;border-radius:50%;width:95px;height:95px;display:flex;align-items:center;justify-content:center;font-weight:bold}
+.arrow{font-size:30px;color:#ff9f1c}
+.tree{display:flex;flex-direction:column;align-items:center;gap:15px}
+.level{display:flex;gap:25px;flex-wrap:wrap;justify-content:center}
+.level .node{width:90px;height:55px;border-radius:12px}
+footer{background:#123047;color:white;text-align:center;padding:25px}
+@media(max-width:800px){.hero{grid-template-columns:1fr}.cards{grid-template-columns:1fr}.hero h1{font-size:36px}nav{flex-direction:column}nav a{margin:0 7px}.search input{width:100%;margin-bottom:10px}}
+</style>
+</head>
+<body>
+
+<header>
+<nav>
+<div class="logo">🚌 BUS CONNECT</div>
+<div>
+<a href="#home">หน้าแรก</a>
+<a href="#routes">เส้นทาง</a>
+<a href="#graph">Graph</a>
+<a href="#tree">Tree</a>
+</div>
+</nav>
+</header>
+
+<main>
+<section class="hero" id="home">
+<div>
+<h1>ระบบข้อมูลรถเมล์โดยสาร</h1>
+<p>เว็บไซต์จำลองสำหรับค้นหาเส้นทางรถเมล์ จุดจอด และแสดงความสัมพันธ์ของเส้นทางด้วย Graph Theory และ Tree</p>
+<a class="btn" href="#routes">ดูเส้นทางรถเมล์</a>
+</div>
+<div class="bus-art">
+<div class="bus">🚌</div>
+<h2>เดินทางง่าย • ค้นหาเร็ว • เข้าใจเส้นทาง</h2>
+</div>
+</section>
+
+<section id="routes">
+<h2 class="title">🚌 เส้นทางรถเมล์</h2>
+<div class="cards">
+<div class="card"><div class="route">สาย 8</div><p>อนุสาวรีย์ชัยฯ → สะพานพุทธ</p><p>จุดสำคัญ: อนุสาวรีย์ชัยฯ, เยาวราช, สะพานพุทธ</p></div>
+<div class="card"><div class="route">สาย 15</div><p>เดอะมอลล์ท่าพระ → สนามหลวง</p><p>จุดสำคัญ: ท่าพระ, วงเวียนใหญ่, สนามหลวง</p></div>
+<div class="card"><div class="route">สาย 29</div><p>รังสิต → หัวลำโพง</p><p>จุดสำคัญ: รังสิต, ดอนเมือง, อนุสาวรีย์ชัยฯ</p></div>
+</div>
+
+<div class="search">
+<h2>🔎 ค้นหาจุดจอดรถเมล์</h2>
+<p style="margin:8px 0 15px">พิมพ์ชื่อจุด เช่น อนุสาวรีย์, รังสิต, สนามหลวง</p>
+<input id="searchInput" placeholder="พิมพ์ชื่อจุดจอด...">
+<button onclick="searchStop()">ค้นหา</button>
+<div id="result"></div>
+</div>
+</section>
+
+<section id="graph">
+<h2 class="title">📊 Graph Theory ของเส้นทาง</h2>
+<div class="graph">
+<p><b>Vertex</b> = จุดจอดรถเมล์ และ <b>Edge</b> = เส้นทางที่เชื่อมระหว่างจุดจอด</p>
+<div class="graphbox">
+<div class="node">อนุสาวรีย์</div><div class="arrow">→</div>
+<div class="node">เยาวราช</div><div class="arrow">→</div>
+<div class="node">สะพานพุทธ</div>
+</div>
+<p><b>ตัวอย่าง Adjacency List</b></p>
+<pre style="background:#f1f6fa;padding:18px;border-radius:10px;margin-top:10px">const graph = {
+  "อนุสาวรีย์": ["เยาวราช", "รังสิต"],
+  "เยาวราช": ["อนุสาวรีย์", "สะพานพุทธ"],
+  "สะพานพุทธ": ["เยาวราช"],
+  "รังสิต": ["อนุสาวรีย์", "ดอนเมือง"],
+  "ดอนเมือง": ["รังสิต"]
+};</pre>
+<p style="margin-top:15px"><b>Path ตัวอย่าง:</b> อนุสาวรีย์ → เยาวราช → สะพานพุทธ</p>
+</div>
+</section>
+
+<section id="tree">
+<h2 class="title">🌳 Tree ของระบบรถเมล์</h2>
+<div class="graph">
+<p>Tree ใช้แทนโครงสร้างข้อมูลแบบลำดับชั้น เช่น เขต → จุดจอด → สายรถเมล์</p>
+<div class="tree" style="margin-top:25px">
+<div class="level"><div class="node">กรุงเทพฯ</div></div>
+<div>↓</div>
+<div class="level"><div class="node">ใจกลางเมือง</div><div class="node">ชานเมือง</div></div>
+<div>↓</div>
+<div class="level"><div class="node">อนุสาวรีย์</div><div class="node">เยาวราช</div><div class="node">รังสิต</div></div>
+<div>↓</div>
+<div class="level"><div class="node">สาย 8</div><div class="node">สาย 15</div><div class="node">สาย 29</div></div>
+</div>
+<p style="margin-top:25px"><b>Root:</b> กรุงเทพฯ | <b>Parent:</b> ใจกลางเมือง/ชานเมือง | <b>Child:</b> จุดจอด | <b>Leaf:</b> สายรถเมล์</p>
+</div>
+</section>
+</main>
+
+<footer>
+<p>🚌 Bus Connect | โครงงานประยุกต์ใช้ Graph Theory และ Tree</p>
+<p>พัฒนาโดย HTML + CSS + JavaScript</p>
+</footer>
+
+<script>
+const stops = {
+ "อนุสาวรีย์":"พบเส้นทางสาย 8 และสาย 29",
+ "เยาวราช":"พบเส้นทางสาย 8",
+ "สะพานพุทธ":"พบเส้นทางสาย 8",
+ "สนามหลวง":"พบเส้นทางสาย 15",
+ "รังสิต":"พบเส้นทางสาย 29",
+ "ดอนเมือง":"พบเส้นทางสาย 29"
+};
+
+function searchStop(){
+ const input=document.getElementById("searchInput").value.trim();
+ const result=document.getElementById("result");
+ if(!input){
+   result.style.display="block";
+   result.textContent="กรุณาพิมพ์ชื่อจุดจอดที่ต้องการค้นหา";
+   return;
+ }
+ const key=Object.keys(stops).find(k=>k.includes(input)||input.includes(k));
+ result.style.display="block";
+ result.textContent=key ? "📍 "+key+" : "+stops[key] : "ไม่พบข้อมูลจุดจอดนี้ ลองค้นหา อนุสาวรีย์, เยาวราช, สนามหลวง, รังสิต หรือ ดอนเมือง";
+}
+</script>
+</body>
+</html>
